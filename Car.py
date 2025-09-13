@@ -7,12 +7,23 @@ from Settings import *
 class Car(pygame.sprite.Sprite):
     def __init__(self, y_pos, direction, all_cars_in_lane, level):
         super().__init__()
-        
-        self.image = pygame.Surface([CAR_WIDTH, CAR_HEIGHT])
-        self.image.fill(GRAY)
-        self.rect = self.image.get_rect()
-        
+        # Carrega as imagens dos carros apenas uma vez (classe)
+        if not hasattr(Car, 'car_images'):
+            Car.car_images = []
+            for i in range(1, 7):
+                img = pygame.image.load(f"assets/car{i}.png").convert_alpha()
+                img = pygame.transform.scale(img, (CAR_HEIGHT, CAR_WIDTH))
+                img = pygame.transform.rotate(img, -90)
+                Car.car_images.append(img)
+
         self.direction = direction
+        # Escolhe uma imagem aleatória para este carro e rotaciona conforme a direção
+        base_img = random.choice(Car.car_images)
+        if self.direction == 1:
+            self.image = pygame.transform.rotate(base_img, 0)  # Para a direita
+        else:
+            self.image = pygame.transform.rotate(base_img, 180)  # Para a esquerda
+        self.rect = self.image.get_rect()
         self.rect.y = y_pos
 
         min_speed = CAR_BASE_SPEED_MIN + (level - 1) * CAR_SPEED_INCREMENT
