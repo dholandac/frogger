@@ -23,6 +23,10 @@ pygame.font.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Frogger Aprimorado")
 clock = pygame.time.Clock()
+    
+# --- Background ---
+background_img = pygame.image.load("assets/forestbackground.png").convert()
+background_img = pygame.transform.scale(background_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # --- Variáveis e Grupos ---
 life_lost_feedback_time = 0
@@ -133,9 +137,8 @@ while running:
         if keys[pygame.K_DOWN] or keys[pygame.K_s]: dy = PLAYER_SPEED
         player.set_speed(dx, dy)
 
-    # Lógica do Jogo (Update)
+    # Lógica do Jogo
     if current_game_state == GAME_STATE_PLAYING:
-        # Atualizações
         player.update()
         enemies_group.update()
         enemy_projectiles_group.update()
@@ -147,7 +150,12 @@ while running:
 
         # Colisões
         pygame.sprite.groupcollide(player_projectiles_group, enemies_group, True, True)
-        pygame.sprite.groupcollide(player_projectiles_group, cars_group, True, False)
+        # Ao colidir com carro, balança
+        car_hits = pygame.sprite.groupcollide(player_projectiles_group, cars_group, True, False)
+        for cars in car_hits.values():
+            for car in cars:
+                if hasattr(car, 'shake'):
+                    car.shake()
         pygame.sprite.groupcollide(enemy_projectiles_group, cars_group, True, False)
 
         hit = False
@@ -167,7 +175,7 @@ while running:
                 current_game_state = GAME_STATE_ALL_CLEARED
 
     # --- Desenho ---
-    screen.fill(BLACK)
+    screen.blit(background_img, (0, 0))
     for y_pos in CAR_LANES_Y:
         pygame.draw.rect(screen, DARK_GRAY, [0, y_pos, SCREEN_WIDTH, CAR_HEIGHT])
     pygame.draw.rect(screen, BLUE_FINISH, [0, 0, SCREEN_WIDTH, FINISH_LINE_HEIGHT])

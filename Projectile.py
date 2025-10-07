@@ -1,13 +1,11 @@
-# Projectile.py
-
 import pygame
 from Settings import *
 
 class Projectile(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
-        self.image = pygame.Surface([PROJECTILE_WIDTH, PROJECTILE_HEIGHT])
-        self.image.fill(YELLOW)
+        img = pygame.image.load("assets/sopro.png").convert_alpha()
+        self.image = pygame.transform.scale(img, (PROJECTILE_WIDTH, PROJECTILE_HEIGHT))
         self.rect = self.image.get_rect()
         self.rect.centerx = x
         self.rect.bottom = y

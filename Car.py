@@ -5,6 +5,11 @@ import random
 from Settings import *
 
 class Car(pygame.sprite.Sprite):
+    def shake(self):
+        pass  # Efeito de shake removido
+    def shake(self):
+        self.shake_timer = 12  # frames
+        self.shake_angle = random.choice([-15, 15])
     def __init__(self, y_pos, direction, all_cars_in_lane, level):
         super().__init__()
         # Carrega as imagens dos carros apenas uma vez (classe)
@@ -25,6 +30,8 @@ class Car(pygame.sprite.Sprite):
             self.image = pygame.transform.rotate(base_img, 180)  # Para a esquerda
         self.rect = self.image.get_rect()
         self.rect.y = y_pos
+
+    # Shake removido
 
         min_speed = CAR_BASE_SPEED_MIN + (level - 1) * CAR_SPEED_INCREMENT
         max_speed = CAR_BASE_SPEED_MAX + (level - 1) * CAR_SPEED_INCREMENT
@@ -66,7 +73,7 @@ class Car(pygame.sprite.Sprite):
     # MODIFICADO: Lógica de atualização completamente refeita
     def update(self, all_cars_in_lane):
         """Move o carro, ajustando a velocidade para evitar colisões na pista."""
-        
+
         # --- LÓGICA ANTI-COLISÃO ---
         leading_car = None
         min_distance = float('inf')
@@ -82,14 +89,13 @@ class Car(pygame.sprite.Sprite):
                 if 0 < distance < min_distance:
                     min_distance = distance
                     leading_car = other_car
-            
             # Se estiver se movendo para a esquerda
             elif self.direction == -1:
                 distance = self.rect.left - other_car.rect.right
                 if 0 < distance < min_distance:
                     min_distance = distance
                     leading_car = other_car
-        
+
         # Se houver um carro à frente e estiver muito perto, reduza a velocidade
         if leading_car and min_distance < CAR_SAFETY_DISTANCE:
             # A velocidade do carro de trás não deve exceder a do carro da frente
@@ -100,7 +106,7 @@ class Car(pygame.sprite.Sprite):
 
         # --- MOVIMENTO E REPOSICIONAMENTO ---
         self.rect.x += self.speed * self.direction
-        
+
         repositioned = False
         if self.direction == 1 and self.rect.left > SCREEN_WIDTH:
             self.rect.right = 0

@@ -49,8 +49,8 @@ ENEMY_FIRE_RATE_MAX = 3500
 ENEMY_SPAWN_TOP_PERCENT = 0.6
 
 # --- Configurações do Projétil do Inimigo ---
-PROJECTILE_WIDTH = 8
-PROJECTILE_HEIGHT = 20
+PROJECTILE_WIDTH = 30
+PROJECTILE_HEIGHT = 30
 PROJECTILE_SPEED = 7
 
 # --- Configurações do Projétil do Jogador ---

@@ -1,5 +1,3 @@
-# Button.py
-
 import pygame
 from Settings import *
 

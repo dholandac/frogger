@@ -8,11 +8,17 @@ from PlayerProjectile import PlayerProjectile
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        # Imagem original para rotação sem perda de qualidade
-        self.original_image = pygame.Surface([PLAYER_WIDTH, PLAYER_HEIGHT], pygame.SRCALPHA)
-        pygame.draw.polygon(self.original_image, GREEN, [(PLAYER_WIDTH / 2, 0), (0, PLAYER_HEIGHT), (PLAYER_WIDTH, PLAYER_HEIGHT)])
-        
-        self.image = self.original_image
+        # Usa a imagem velha.png como sprite do player
+        # Carrega todas as imagens de direção
+        self.images = {
+            'cima': pygame.transform.scale(pygame.image.load("assets/velhacima.png").convert_alpha(), (PLAYER_WIDTH, PLAYER_HEIGHT)),
+            'baixo': pygame.transform.scale(pygame.image.load("assets/velhabaixo.png").convert_alpha(), (PLAYER_WIDTH, PLAYER_HEIGHT)),
+            'cimadir': pygame.transform.scale(pygame.image.load("assets/velhacimadir.png").convert_alpha(), (PLAYER_WIDTH, PLAYER_HEIGHT)),
+            'cimaesq': pygame.transform.scale(pygame.image.load("assets/velhacimaesq.png").convert_alpha(), (PLAYER_WIDTH, PLAYER_HEIGHT)),
+            'baixodir': pygame.transform.scale(pygame.image.load("assets/velhabaixodir.png").convert_alpha(), (PLAYER_WIDTH, PLAYER_HEIGHT)),
+            'baixoesq': pygame.transform.scale(pygame.image.load("assets/velhabaixoesq.png").convert_alpha(), (PLAYER_WIDTH, PLAYER_HEIGHT)),
+        }
+        self.image = self.images['cima']
         self.rect = self.image.get_rect()
         
         self.dx = 0
@@ -86,15 +92,36 @@ class Player(pygame.sprite.Sprite):
         self.dy = dy
 
     def update(self):
-        """Atualiza a posição e a rotação do jogador."""
-        # Atualiza o ângulo apenas se houver movimento
+        """Atualiza apenas a posição do jogador, sem rotacionar o sprite."""
+        # Atualiza o ângulo apenas se houver movimento (para tiros)
         if self.dx != 0 or self.dy != 0:
             self.angle = math.degrees(math.atan2(-self.dy, self.dx)) - 90
-        
-        # Rotaciona a imagem original para evitar distorção
-        old_center = self.rect.center
-        self.image = pygame.transform.rotate(self.original_image, self.angle)
-        self.rect = self.image.get_rect(center=old_center)
+
+
+        # Troca a imagem conforme a direção
+        direction = None
+        if self.dx == 0 and self.dy < 0:
+            direction = 'cima'
+        elif self.dx == 0 and self.dy > 0:
+            direction = 'baixo'
+        elif self.dx > 0 and self.dy < 0:
+            direction = 'cimadir'
+        elif self.dx < 0 and self.dy < 0:
+            direction = 'cimaesq'
+        elif self.dx > 0 and self.dy > 0:
+            direction = 'baixodir'
+        elif self.dx < 0 and self.dy > 0:
+            direction = 'baixoesq'
+        elif self.dx > 0:
+            direction = 'cimadir'  # Direita pura, usa cima-direita
+        elif self.dx < 0:
+            direction = 'cimaesq'  # Esquerda pura, usa cima-esquerda
+        elif self.dy > 0:
+            direction = 'baixo'
+        elif self.dy < 0:
+            direction = 'cima'
+        if direction:
+            self.image = self.images[direction]
 
         # Move o jogador
         self.rect.x += self.dx
